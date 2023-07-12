@@ -1,17 +1,30 @@
-const e = require("express");
 const mongodb = require("mongodb");
-
 const MongoClient = mongodb.MongoClient;
+
+let _db; // the underscore is only here to signal that this will only be used internally in this file
 
 const mongoConnect = (callback) => {
   MongoClient.connect(
-    "mongodb+srv://denys:295q6722822@cluster0.fk2cpgo.mongodb.net/?retryWrites=true&w=majority"
+    "mongodb+srv://denys:295q6722822@cluster0.fk2cpgo.mongodb.net/shop?retryWrites=true&w=majority"
   )
     .then((client) => {
       console.log("Connected!");
-      callback(client);
+      _db = client.db()
+      callback();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
 };
 
-module.exports = mongoConnect;
+const getDb = () => {
+  if (_db) {
+    return _db
+  }
+  throw 'No database found!';
+}
+
+exports.mongoConnect = mongoConnect;
+exports.getDb = getDb;
+
