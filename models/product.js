@@ -2,12 +2,12 @@ const getDb = require("../util/database").getDb;
 const mongodb = require("mongodb");
 
 class Product {
-  constructor(title, price, description, imageUrl, _id) {
+  constructor(title, price, description, imageUrl, id) {
     this.title = title;
     this.price = price;
     this.description = description;
     this.imageUrl = imageUrl;
-    this._id = new mongodb.ObjectId(_id);
+    this._id = new mongodb.ObjectId(id);
   }
 
   save() {
@@ -16,14 +16,23 @@ class Product {
     if (this._id) {
       dbOp = db.collection("products").updateOne({_id: this._id}, {$set: this})
     } else {
+      console.log('esti moment');
       dbOp = db.collection("products").insertOne(this)
-      console.log(dbOp);
     }
     return dbOp  
       .then((result) => {
         console.log(result);
       })
       .catch((err) => console.log(err));
+  }
+
+  static delete (prodId) {
+    const db = getDb();
+    return db.collection('products').deleteOne({_id: new mongodb.ObjectId(prodId)})
+    .then(result => {
+      console.log('Product deleted!')
+    })
+    .catch(err => console.log(err))
   }
 
   static feachAll() {
