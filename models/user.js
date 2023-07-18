@@ -116,7 +116,8 @@ class User {
 
   getOrders() {
     const db = getDb();
-    return db.collection('orders').find()
+    return db.collection('orders').find({'user._id': new mongodb.ObjectId(this._id)}) // 'some text' - this how we search info for document
+    .toArray()
   }
 
   static findById(userId) {
